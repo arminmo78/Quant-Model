@@ -7,1136 +7,714 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080c10;--surface:#0d1219;--border:#1a2330;--border-bright:#243040;
+  --text:#c8d4e0;--muted:#4a5f72;--dim:#2a3a4a;
+  --green:#00e5a0;--green-dim:#003d2b;
+  --red:#ff3b5c;--red-dim:#3d0010;
+  --amber:#ffb300;--amber-dim:#3d2900;
+  --blue:#4da8ff;--blue-dim:#0a1e35;
+  --accent:#00e5a0;
+  --font-mono:'Space Mono',monospace;
+  --font-display:'DM Serif Display',serif;
+  --font-body:'Barlow Condensed',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px}
 
-  :root {
-    --bg: #080c10;
-    --surface: #0d1219;
-    --border: #1a2330;
-    --border-bright: #243040;
-    --text: #c8d4e0;
-    --muted: #4a5f72;
-    --dim: #2a3a4a;
-    --green: #00e5a0;
-    --green-dim: #003d2b;
-    --green-glow: rgba(0,229,160,0.15);
-    --red: #ff3b5c;
-    --red-dim: #3d0010;
-    --red-glow: rgba(255,59,92,0.15);
-    --amber: #ffb300;
-    --amber-dim: #3d2900;
-    --blue: #4da8ff;
-    --blue-dim: #0a1e35;
-    --accent: #00e5a0;
-    --font-mono: 'Space Mono', monospace;
-    --font-display: 'DM Serif Display', serif;
-    --font-body: 'Barlow Condensed', sans-serif;
-  }
+/* HEADER */
+header{border-bottom:1px solid var(--border);padding:18px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.logo{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.logo span{color:var(--accent)}
+.header-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.header-badge{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--muted);border:1px solid var(--border-bright);padding:4px 12px;text-transform:uppercase}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.8s ease-in-out infinite;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,160,.6)}50%{opacity:.6;box-shadow:0 0 0 5px rgba(0,229,160,0)}}
+.refresh-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;color:var(--accent);border:1px solid rgba(0,229,160,.4);padding:4px 14px;text-transform:uppercase;cursor:pointer;background:transparent;transition:all .15s}
+.refresh-btn:hover{background:rgba(0,229,160,.08)}
+.refresh-btn:disabled{opacity:.4;cursor:not-allowed}
 
-  html { scroll-behavior: smooth; }
+/* HERO */
+.hero{padding:52px 0 36px;border-bottom:1px solid var(--border)}
+.hero-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.1rem,5vw,3.8rem);line-height:1.05;color:#e8f0f8;margin-bottom:14px;font-weight:400}
+.hero h1 em{color:var(--accent);font-style:italic}
+.hero-desc{font-size:16px;font-weight:300;color:var(--muted);max-width:560px;line-height:1.6;letter-spacing:.02em}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 16px;
-    line-height: 1.5;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* API KEY */
+.api-key-section{background:var(--surface);border:1px solid var(--border-bright);padding:28px 30px;margin:32px 0}
+.api-key-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.api-key-desc{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6}
+.api-key-row{display:flex;gap:8px;flex-wrap:wrap}
+.api-key-input{flex:1;min-width:230px;background:var(--bg);border:1px solid var(--border-bright);color:var(--text);font-family:var(--font-mono);font-size:12px;padding:10px 14px;outline:none;letter-spacing:.05em}
+.api-key-input:focus{border-color:var(--accent)}
+.api-key-btn{background:var(--accent);border:none;color:#000;font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:10px 20px;cursor:pointer;font-weight:700}
+.api-key-btn:hover{opacity:.85}
+.api-key-note{font-family:var(--font-mono);font-size:9px;color:var(--dim);margin-top:10px;line-height:1.8}
 
-  /* Noise overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-  }
+/* LOADING */
+.loading-overlay{background:var(--surface);border:1px solid var(--border);padding:48px;text-align:center;margin:32px 0}
+.loading-spinner{width:44px;height:44px;border:2px solid var(--border-bright);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 18px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.loading-step{font-family:var(--font-mono);font-size:10px;color:var(--dim);margin-top:8px;letter-spacing:.1em}
 
-  /* Scanlines */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(0,0,0,0.03) 4px
-    );
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ERROR */
+.error-box{background:var(--red-dim);border:1px solid rgba(255,59,92,.3);padding:20px 26px;margin:20px 0}
+.error-box p{font-family:var(--font-mono);font-size:11px;color:var(--red);letter-spacing:.08em;line-height:1.7}
 
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
+/* STATS STRIP */
+.stats-strip{background:var(--surface);border:1px solid var(--border);display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:2px}
+.stat-cell{padding:22px 18px;border-right:1px solid var(--border)}
+.stat-cell:last-child{border-right:none}
+.stat-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.stat-value{font-family:var(--font-display);font-size:1.7rem;color:#dce8f4;line-height:1;font-weight:400;margin-bottom:4px}
+.stat-delta{font-family:var(--font-mono);font-size:10px;letter-spacing:.06em}
+.pos{color:var(--green)}.neg{color:var(--red)}.neu{color:var(--muted)}
 
-  /* ── HEADER ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 20px 0;
-  }
-  .header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .logo {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .logo span {
-    color: var(--accent);
-  }
-  .header-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    border: 1px solid var(--border-bright);
-    padding: 4px 12px;
-    text-transform: uppercase;
-  }
-  .live-dot {
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--green);
-    margin-right: 6px;
-    animation: pulse 1.8s ease-in-out infinite;
-    vertical-align: middle;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,160,0.6); }
-    50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(0,229,160,0); }
-  }
+/* SIGNAL GRID */
+.signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--border);border:1px solid var(--border)}
+.signal-cell{background:var(--surface);padding:26px}
+.big-signal{text-align:center;padding:40px 24px}
+.signal-status-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.signal-orb{width:104px;height:104px;border-radius:50%;margin:0 auto 22px;display:flex;align-items:center;justify-content:center}
+.signal-orb.bullish{background:radial-gradient(circle at 40% 40%,#00e5a0,#00a86b);box-shadow:0 0 40px rgba(0,229,160,.5),0 0 80px rgba(0,229,160,.2);animation:orbG 3s ease-in-out infinite}
+.signal-orb.bearish{background:radial-gradient(circle at 40% 40%,#ff3b5c,#cc1a38);box-shadow:0 0 40px rgba(255,59,92,.5),0 0 80px rgba(255,59,92,.2);animation:orbR 3s ease-in-out infinite}
+.signal-orb.neutral{background:radial-gradient(circle at 40% 40%,#ffb300,#cc8800);box-shadow:0 0 40px rgba(255,179,0,.5),0 0 80px rgba(255,179,0,.2)}
+.signal-orb-icon{font-size:36px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
+@keyframes orbG{0%,100%{box-shadow:0 0 40px rgba(0,229,160,.5),0 0 80px rgba(0,229,160,.2)}50%{box-shadow:0 0 60px rgba(0,229,160,.7),0 0 120px rgba(0,229,160,.3)}}
+@keyframes orbR{0%,100%{box-shadow:0 0 40px rgba(255,59,92,.5),0 0 80px rgba(255,59,92,.2)}50%{box-shadow:0 0 60px rgba(255,59,92,.7),0 0 120px rgba(255,59,92,.3)}}
+.signal-word{font-family:var(--font-display);font-size:2.8rem;line-height:1;margin-bottom:8px;font-weight:400}
+.signal-word.bullish{color:var(--green)}.signal-word.bearish{color:var(--red)}.signal-word.neutral{color:var(--amber)}
+.signal-sub{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;max-width:240px;margin:0 auto;line-height:1.6}
+.signal-updated{font-family:var(--font-mono);font-size:10px;color:var(--dim);margin-top:14px;letter-spacing:.06em}
 
-  /* ── HERO ── */
-  .hero {
-    padding: 64px 0 48px;
-    border-bottom: 1px solid var(--border);
-  }
-  .hero-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 16px;
-  }
-  .hero h1 {
-    font-family: var(--font-display);
-    font-size: clamp(2.4rem, 5vw, 4.2rem);
-    line-height: 1.05;
-    color: #e8f0f8;
-    margin-bottom: 20px;
-    font-weight: 400;
-  }
-  .hero h1 em {
-    color: var(--accent);
-    font-style: italic;
-  }
-  .hero-desc {
-    font-size: 17px;
-    font-weight: 300;
-    color: var(--muted);
-    max-width: 580px;
-    line-height: 1.6;
-    letter-spacing: 0.02em;
-  }
+/* BAROMETERS */
+.baro-col{display:flex;flex-direction:column;gap:2px}
+.baro-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.baro-name{font-family:var(--font-display);font-size:1.3rem;color:#dce8f4;margin-bottom:14px;font-weight:400}
+.baro-score{font-family:var(--font-mono);font-size:1.7rem;font-weight:700;margin-bottom:2px}
+.baro-score.bullish{color:var(--green)}.baro-score.bearish{color:var(--red)}.baro-score.neutral{color:var(--amber)}
+.baro-score-label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
+.baro-score-label.bullish{color:rgba(0,229,160,.7)}.baro-score-label.bearish{color:rgba(255,59,92,.7)}.baro-score-label.neutral{color:rgba(255,179,0,.7)}
+.baro-gauge-track{height:5px;background:var(--border-bright);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.baro-gauge-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.baro-gauge-fill.bullish{background:linear-gradient(90deg,#00a86b,#00e5a0)}
+.baro-gauge-fill.bearish{background:linear-gradient(90deg,#cc1a38,#ff3b5c)}
+.baro-gauge-fill.neutral{background:linear-gradient(90deg,#cc8800,#ffb300)}
+.baro-gauge-meta{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--dim);margin-bottom:14px}
+.baro-factors{display:flex;flex-direction:column;gap:7px}
+.baro-factor{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--text)}
+.factor-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.factor-dot.up{background:var(--green)}.factor-dot.down{background:var(--red)}.factor-dot.flat{background:var(--amber)}
+.factor-val{margin-left:auto;font-family:var(--font-mono);font-size:10px}
+.factor-val.up{color:var(--green)}.factor-val.down{color:var(--red)}.factor-val.flat{color:var(--amber)}
 
-  /* ── MAIN SIGNAL CARD ── */
-  .signal-section {
-    padding: 56px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 28px;
-  }
+/* NARRATIVE */
+.narrative-section{padding:36px 0;border-bottom:1px solid var(--border)}
+.narrative-box{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:26px 30px;margin-top:18px}
+.narrative-header{font-family:var(--font-mono);font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.narrative-text{font-size:14px;font-weight:300;color:var(--text);line-height:1.8;letter-spacing:.02em}
 
-  .signal-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    margin-bottom: 2px;
-  }
-  .signal-cell {
-    background: var(--surface);
-    padding: 32px;
-  }
-  .signal-cell.full-width {
-    grid-column: 1 / -1;
-  }
+/* SECTIONS */
+.section-pad{padding:36px 0;border-bottom:1px solid var(--border)}
+.section-label{font-family:var(--font-mono);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
 
-  /* Big Signal Indicator */
-  .big-signal {
-    text-align: center;
-    padding: 48px 32px;
-  }
-  .signal-status-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-  .signal-orb {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    margin: 0 auto 28px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .signal-orb.bullish {
-    background: radial-gradient(circle at 40% 40%, #00e5a0, #00a86b);
-    box-shadow: 0 0 40px rgba(0,229,160,0.5), 0 0 80px rgba(0,229,160,0.2), inset 0 0 30px rgba(255,255,255,0.1);
-    animation: orbpulse-green 3s ease-in-out infinite;
-  }
-  .signal-orb.bearish {
-    background: radial-gradient(circle at 40% 40%, #ff3b5c, #cc1a38);
-    box-shadow: 0 0 40px rgba(255,59,92,0.5), 0 0 80px rgba(255,59,92,0.2), inset 0 0 30px rgba(255,255,255,0.1);
-    animation: orbpulse-red 3s ease-in-out infinite;
-  }
-  .signal-orb.neutral {
-    background: radial-gradient(circle at 40% 40%, #ffb300, #cc8800);
-    box-shadow: 0 0 40px rgba(255,179,0,0.5), 0 0 80px rgba(255,179,0,0.2), inset 0 0 30px rgba(255,255,255,0.1);
-  }
-  .signal-orb-icon {
-    font-size: 42px;
-    line-height: 1;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-  }
-  @keyframes orbpulse-green {
-    0%, 100% { box-shadow: 0 0 40px rgba(0,229,160,0.5), 0 0 80px rgba(0,229,160,0.2); }
-    50% { box-shadow: 0 0 60px rgba(0,229,160,0.7), 0 0 120px rgba(0,229,160,0.3); }
-  }
-  @keyframes orbpulse-red {
-    0%, 100% { box-shadow: 0 0 40px rgba(255,59,92,0.5), 0 0 80px rgba(255,59,92,0.2); }
-    50% { box-shadow: 0 0 60px rgba(255,59,92,0.7), 0 0 120px rgba(255,59,92,0.3); }
-  }
+/* ASSET GRID */
+.selector-tabs{display:flex;gap:2px;margin-bottom:18px;flex-wrap:wrap}
+.tab-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:8px 16px;font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.tab-btn:hover{border-color:var(--border-bright);color:var(--text)}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
+.asset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:2px;background:var(--border);border:1px solid var(--border)}
+.asset-card{background:var(--surface);padding:17px}
+.asset-ticker{font-family:var(--font-mono);font-size:13px;font-weight:700;color:#dce8f4;margin-bottom:3px;letter-spacing:.05em}
+.asset-name{font-size:11px;color:var(--muted);margin-bottom:11px}
+.asset-signal-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.asset-sig-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+.asset-sig-tag.long{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,229,160,.25)}
+.asset-sig-tag.short{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,59,92,.25)}
+.asset-sig-tag.cash{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(77,168,255,.25)}
+.asset-sig-tag.watch{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,179,0,.25)}
+.asset-change{font-family:var(--font-mono);font-size:11px;font-weight:700}
+.asset-price{font-family:var(--font-mono);font-size:10px;color:var(--dim)}
 
-  .signal-word {
-    font-family: var(--font-display);
-    font-size: 3.2rem;
-    line-height: 1;
-    margin-bottom: 8px;
-    font-weight: 400;
-  }
-  .signal-word.bullish { color: var(--green); }
-  .signal-word.bearish { color: var(--red); }
-  .signal-word.neutral { color: var(--amber); }
+/* REGIME TABLE */
+.regime-table{background:var(--surface);border:1px solid var(--border);margin-top:18px;overflow:hidden}
+.regime-row{display:grid;grid-template-columns:145px 1fr 100px 110px;border-bottom:1px solid var(--border);align-items:center}
+.regime-row:last-child{border-bottom:none}
+.regime-row.header{background:rgba(255,255,255,.02)}
+.regime-cell{padding:13px 16px;border-right:1px solid var(--border);font-size:13px}
+.regime-cell:last-child{border-right:none}
+.regime-cell.hdr{font-family:var(--font-mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.regime-tag{display:inline-block;padding:2px 8px;font-family:var(--font-mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;border-radius:2px}
+.regime-tag.bull{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,229,160,.3)}
+.regime-tag.bear{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,59,92,.3)}
+.regime-tag.cash{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(77,168,255,.3)}
+.regime-tag.neut{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,179,0,.3)}
+.perf-pos{color:var(--green);font-family:var(--font-mono);font-size:12px;font-weight:700}
 
-  .signal-sub {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-  .signal-updated {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--dim);
-    margin-top: 16px;
-    letter-spacing: 0.1em;
-  }
+/* METHODOLOGY */
+.method-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;background:var(--border);border:1px solid var(--border);margin-top:22px}
+.method-card{background:var(--surface);padding:26px}
+.method-num{font-family:var(--font-mono);font-size:10px;letter-spacing:.2em;color:var(--accent);margin-bottom:9px}
+.method-title{font-family:var(--font-display);font-size:1.15rem;color:#dce8f4;margin-bottom:9px;font-weight:400}
+.method-desc{font-size:13px;font-weight:300;color:var(--muted);line-height:1.65;letter-spacing:.02em}
 
-  /* Barometer cells */
-  .baro-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-  .baro-name {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    color: #dce8f4;
-    margin-bottom: 24px;
-    font-weight: 400;
-  }
-  .baro-gauge {
-    margin-bottom: 20px;
-  }
-  .baro-gauge-track {
-    height: 6px;
-    background: var(--border-bright);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
-  .baro-gauge-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .baro-gauge-fill.bullish { background: linear-gradient(90deg, #00a86b, #00e5a0); }
-  .baro-gauge-fill.bearish { background: linear-gradient(90deg, #cc1a38, #ff3b5c); }
-  .baro-gauge-fill.neutral { background: linear-gradient(90deg, #cc8800, #ffb300); }
+/* HISTORY */
+.history-chart{background:var(--surface);border:1px solid var(--border);padding:26px;margin-top:18px}
+.history-chart-title{font-family:var(--font-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.timeline{display:flex;align-items:flex-end;gap:3px;height:68px;margin-bottom:9px}
+.timeline-bar{flex:1;border-radius:2px 2px 0 0}
+.timeline-bar.bull{background:var(--green)}.timeline-bar.bear{background:var(--red)}.timeline-bar.neut{background:var(--amber)}.timeline-bar.cash{background:var(--dim)}
+.timeline-labels{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:9px;color:var(--dim);letter-spacing:.06em}
+.history-legend{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.legend-dot{width:8px;height:8px;border-radius:2px}
 
-  .baro-gauge-meta {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--dim);
-  }
-  .baro-score {
-    font-family: var(--font-mono);
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-  .baro-score.bullish { color: var(--green); }
-  .baro-score.bearish { color: var(--red); }
-  .baro-score.neutral { color: var(--amber); }
-  .baro-score-label {
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .baro-score-label.bullish { color: rgba(0,229,160,0.7); }
-  .baro-score-label.bearish { color: rgba(255,59,92,0.7); }
-  .baro-score-label.neutral { color: rgba(255,179,0,0.7); }
+/* DISCLAIMER / FOOTER */
+.disclaimer{padding:24px 0;border-top:1px solid var(--border)}
+.disclaimer-text{font-family:var(--font-mono);font-size:9px;color:var(--dim);line-height:1.9;letter-spacing:.04em;max-width:900px}
+footer{border-top:1px solid var(--border);padding:18px 0;text-align:center;font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
 
-  .baro-factors {
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .baro-factor {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0.03em;
-    color: var(--text);
-  }
-  .factor-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .factor-dot.up { background: var(--green); }
-  .factor-dot.down { background: var(--red); }
-  .factor-dot.flat { background: var(--amber); }
-  .factor-val {
-    margin-left: auto;
-    font-family: var(--font-mono);
-    font-size: 11px;
-  }
-  .factor-val.up { color: var(--green); }
-  .factor-val.down { color: var(--red); }
-  .factor-val.flat { color: var(--amber); }
+/* ANIMATIONS */
+.fade-in{opacity:0;transform:translateY(10px);animation:fadeUp .6s ease forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.35s}
 
-  /* ── SIGNAL HISTORY ── */
-  .history-section {
-    padding: 48px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .history-chart {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 32px;
-    margin-top: 24px;
-  }
-  .history-chart-title {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 24px;
-  }
-  .timeline {
-    display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 80px;
-    margin-bottom: 12px;
-  }
-  .timeline-bar {
-    flex: 1;
-    border-radius: 2px 2px 0 0;
-    position: relative;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-  .timeline-bar:hover { opacity: 0.75; }
-  .timeline-bar.bull { background: var(--green); }
-  .timeline-bar.bear { background: var(--red); }
-  .timeline-bar.neut { background: var(--amber); }
-  .timeline-bar.cash { background: var(--dim); }
-  .timeline-labels {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-  }
-  .history-legend {
-    display: flex;
-    gap: 24px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-  .legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
-  }
-
-  /* ── STATS STRIP ── */
-  .stats-strip {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    margin-bottom: 2px;
-  }
-  .stat-cell {
-    padding: 28px 24px;
-    border-right: 1px solid var(--border);
-  }
-  .stat-cell:last-child { border-right: none; }
-  .stat-label {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-  .stat-value {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    color: #dce8f4;
-    line-height: 1;
-    font-weight: 400;
-    margin-bottom: 4px;
-  }
-  .stat-delta {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-  }
-  .stat-delta.pos { color: var(--green); }
-  .stat-delta.neg { color: var(--red); }
-  .stat-delta.neu { color: var(--muted); }
-
-  /* ── REGIME TABLE ── */
-  .regime-section {
-    padding: 48px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .regime-table {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    margin-top: 24px;
-    overflow: hidden;
-  }
-  .regime-row {
-    display: grid;
-    grid-template-columns: 180px 1fr 100px 120px;
-    gap: 0;
-    border-bottom: 1px solid var(--border);
-    align-items: center;
-  }
-  .regime-row:last-child { border-bottom: none; }
-  .regime-row.header {
-    background: rgba(255,255,255,0.02);
-  }
-  .regime-cell {
-    padding: 16px 20px;
-    border-right: 1px solid var(--border);
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 0.03em;
-  }
-  .regime-cell:last-child { border-right: none; }
-  .regime-cell.header-cell {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .regime-tag {
-    display: inline-block;
-    padding: 3px 10px;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    border-radius: 2px;
-  }
-  .regime-tag.bull { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
-  .regime-tag.bear { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,59,92,0.3); }
-  .regime-tag.cash { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,168,255,0.3); }
-  .regime-tag.neut { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,179,0,0.3); }
-
-  .perf-pos { color: var(--green); font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
-  .perf-neg { color: var(--red); font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
-  .perf-neu { color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
-
-  /* ── SELECTOR ── */
-  .selector-section {
-    padding: 48px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .selector-tabs {
-    display: flex;
-    gap: 2px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-  .tab-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 10px 20px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .tab-btn:hover { border-color: var(--border-bright); color: var(--text); }
-  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
-
-  .asset-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 2px;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-  .asset-card {
-    background: var(--surface);
-    padding: 20px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .asset-card:hover { background: #111820; }
-  .asset-ticker {
-    font-family: var(--font-mono);
-    font-size: 14px;
-    font-weight: 700;
-    color: #dce8f4;
-    margin-bottom: 4px;
-    letter-spacing: 0.05em;
-  }
-  .asset-name {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 14px;
-    letter-spacing: 0.03em;
-  }
-  .asset-signal {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .asset-sig-tag {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 2px 8px;
-    border-radius: 2px;
-  }
-  .asset-sig-tag.long { background: var(--green-dim); color: var(--green); }
-  .asset-sig-tag.short { background: var(--red-dim); color: var(--red); }
-  .asset-sig-tag.cash { background: var(--blue-dim); color: var(--blue); }
-  .asset-sig-tag.watch { background: var(--amber-dim); color: var(--amber); }
-  .asset-change {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .asset-change.pos { color: var(--green); }
-  .asset-change.neg { color: var(--red); }
-
-  /* ── METHODOLOGY ── */
-  .method-section {
-    padding: 56px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .method-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 2px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    margin-top: 28px;
-  }
-  .method-card {
-    background: var(--surface);
-    padding: 32px;
-  }
-  .method-num {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--accent);
-    margin-bottom: 12px;
-  }
-  .method-title {
-    font-family: var(--font-display);
-    font-size: 1.3rem;
-    color: #dce8f4;
-    margin-bottom: 12px;
-    font-weight: 400;
-    line-height: 1.2;
-  }
-  .method-desc {
-    font-size: 14px;
-    font-weight: 300;
-    color: var(--muted);
-    line-height: 1.6;
-    letter-spacing: 0.02em;
-  }
-
-  /* ── DISCLAIMER ── */
-  .disclaimer {
-    padding: 32px 0;
-    border-top: 1px solid var(--border);
-  }
-  .disclaimer-text {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--dim);
-    line-height: 1.8;
-    letter-spacing: 0.05em;
-    max-width: 900px;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 24px 0;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--dim);
-    text-transform: uppercase;
-  }
-
-  /* ── ANIMATIONS ── */
-  .fade-in {
-    opacity: 0;
-    transform: translateY(16px);
-    animation: fadeUp 0.7s ease forwards;
-  }
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .delay-1 { animation-delay: 0.1s; }
-  .delay-2 { animation-delay: 0.2s; }
-  .delay-3 { animation-delay: 0.35s; }
-  .delay-4 { animation-delay: 0.5s; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 768px) {
-    .signal-grid { grid-template-columns: 1fr; }
-    .stats-strip { grid-template-columns: 1fr 1fr; }
-    .stat-cell { border-bottom: 1px solid var(--border); }
-    .method-grid { grid-template-columns: 1fr; }
-    .asset-grid { grid-template-columns: 1fr 1fr; }
-    .regime-row { grid-template-columns: 1fr 1fr; }
-    .regime-cell:nth-child(3), .regime-cell:nth-child(4) { font-size: 11px; }
-  }
-
-  @media (max-width: 480px) {
-    .stats-strip { grid-template-columns: 1fr 1fr; }
-    .selector-tabs { gap: 4px; }
-    .hero h1 { font-size: 2.2rem; }
-  }
-
-  /* ── TOOLTIP ── */
-  [data-tip] {
-    position: relative;
-  }
-  [data-tip]:hover::after {
-    content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #1a2330;
-    border: 1px solid var(--border-bright);
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    padding: 6px 12px;
-    white-space: nowrap;
-    pointer-events: none;
-    z-index: 10;
-    letter-spacing: 0.08em;
-  }
+/* RESPONSIVE */
+@media(max-width:768px){
+  .signal-grid{grid-template-columns:1fr}
+  .stats-strip{grid-template-columns:1fr 1fr}
+  .method-grid{grid-template-columns:1fr}
+  .asset-grid{grid-template-columns:1fr 1fr}
+  .regime-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .hero h1{font-size:2rem}
+  .asset-grid{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="wrap header-inner">
     <div class="logo">QUANT<span>/</span>SIGNAL — TACTICAL MARKET BAROMETER</div>
-    <div class="header-badge">
-      <span class="live-dot"></span>
-      UPDATED DAILY
+    <div class="header-right">
+      <div class="header-badge" id="lastUpdateBadge"><span class="live-dot"></span>AI-POWERED v4.0</div>
+      <button class="refresh-btn" id="refreshBtn" onclick="runModel()">↻ REFRESH</button>
     </div>
   </div>
 </header>
 
-<!-- HERO -->
 <section class="hero">
   <div class="wrap">
-    <p class="hero-label fade-in">Quantitative Strategy Model · v3.2</p>
-    <h1 class="fade-in delay-1">The market tells you<br><em>when to act.</em></h1>
-    <p class="hero-desc fade-in delay-2">
-      A dual-barometer model — macroeconomic + technical — that generates a single, 
-      emotionless signal. Both barometers must agree before the signal moves. 
-      Backtested across five market cycles.
-    </p>
+    <p class="hero-label fade-in">Quantitative Strategy Model · v4.0 · AI-Powered by Claude</p>
+    <h1 class="fade-in d1">The market tells you<br><em>when to act.</em></h1>
+    <p class="hero-desc fade-in d2">A dual-barometer model powered by live market data and Claude AI. Macro and technical conditions are analysed in real time on every refresh. Both barometers must agree before the signal moves.</p>
   </div>
 </section>
 
-<!-- SIGNAL SECTION -->
-<section class="signal-section">
-  <div class="wrap">
-    <p class="section-label">/ Current Model Output</p>
+<div class="wrap">
 
-    <!-- Stats strip -->
-    <div class="stats-strip fade-in delay-2">
-      <div class="stat-cell">
-        <div class="stat-label">Signal Since</div>
-        <div class="stat-value">Apr 14</div>
-        <div class="stat-delta pos">+11.2% since entry</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">Macro Score</div>
-        <div class="stat-value">74</div>
-        <div class="stat-delta pos">▲ Expansionary</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">Technical Score</div>
-        <div class="stat-value">81</div>
-        <div class="stat-delta pos">▲ Trending</div>
-      </div>
-      <div class="stat-cell">
-        <div class="stat-label">Regime</div>
-        <div class="stat-value" style="font-size:1.5rem">Risk-On</div>
-        <div class="stat-delta neu">Confirmed alignment</div>
-      </div>
+  <!-- API KEY ENTRY -->
+  <div class="api-key-section fade-in d2" id="apiKeySection">
+    <div class="api-key-title">/ Anthropic API Key Required</div>
+    <div class="api-key-desc">Enter your Anthropic API key to activate live AI-powered signal computation. Your key is stored only in your browser session (never on any server) and used only to call the Claude AI model on each refresh.</div>
+    <div class="api-key-row">
+      <input class="api-key-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+      <button class="api-key-btn" onclick="saveKeyAndRun()">ACTIVATE MODEL</button>
     </div>
+    <div class="api-key-note">
+      GET YOUR KEY: console.anthropic.com → API Keys → Create Key &nbsp;|&nbsp; Cost: ~$0.001 per refresh (claude-haiku-4-5 model)<br>
+      Your key is only sent directly to api.anthropic.com. It is never logged or stored on any server.
+    </div>
+  </div>
 
-    <!-- Main signal grid -->
-    <div class="signal-grid fade-in delay-3">
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loadingBox" style="display:none">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">COMPUTING SIGNAL</div>
+    <div class="loading-step" id="loadingStep">Initialising...</div>
+  </div>
 
-      <!-- Big signal -->
-      <div class="signal-cell big-signal">
-        <div class="signal-status-label">Overall Model Signal</div>
-        <div class="signal-orb bullish" id="signalOrb">
-          <div class="signal-orb-icon">↑</div>
+  <!-- ERROR -->
+  <div class="error-box" id="errorBox" style="display:none">
+    <p id="errorMsg">Error.</p>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent" style="display:none">
+
+    <div class="section-pad" style="padding-top:36px">
+      <p class="section-label">/ Current Model Output</p>
+
+      <!-- Stats strip -->
+      <div class="stats-strip fade-in">
+        <div class="stat-cell">
+          <div class="stat-label">Signal As Of</div>
+          <div class="stat-value" id="statDate">—</div>
+          <div class="stat-delta neu" id="statTime">—</div>
         </div>
-        <div class="signal-word bullish" id="signalWord">BULLISH</div>
-        <div class="signal-sub" id="signalSub">Full risk-on positioning</div>
-        <div class="signal-updated" id="signalUpdated">Last computed: May 30, 2026 · 16:00 AEST</div>
+        <div class="stat-cell">
+          <div class="stat-label">Macro Score</div>
+          <div class="stat-value" id="statMacro">—</div>
+          <div class="stat-delta" id="statMacroLabel">—</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Technical Score</div>
+          <div class="stat-value" id="statTech">—</div>
+          <div class="stat-delta" id="statTechLabel">—</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Regime</div>
+          <div class="stat-value" id="statRegime" style="font-size:1.2rem">—</div>
+          <div class="stat-delta neu" id="statRegimeLabel">—</div>
+        </div>
       </div>
 
-      <!-- Barometers right column -->
-      <div style="display:flex;flex-direction:column;gap:2px;">
-
-        <!-- Macro Baro -->
-        <div class="signal-cell">
-          <div class="baro-label">01 / Macroeconomic Barometer</div>
-          <div class="baro-name">Macro Regime</div>
-          <div class="baro-score bullish" id="macroScore">74 / 100</div>
-          <div class="baro-score-label bullish">Expansionary</div>
-          <div class="baro-gauge" style="margin-top:16px;">
-            <div class="baro-gauge-track">
-              <div class="baro-gauge-fill bullish" id="macroFill" style="width:74%"></div>
-            </div>
-            <div class="baro-gauge-meta">
-              <span>CONTRACTION</span><span>NEUTRAL</span><span>EXPANSION</span>
-            </div>
+      <!-- Signal + barometers -->
+      <div style="margin-top:2px">
+        <div class="signal-grid fade-in d1">
+          <!-- Orb -->
+          <div class="signal-cell big-signal">
+            <div class="signal-status-label">Overall Model Signal</div>
+            <div class="signal-orb bullish" id="signalOrb"><div class="signal-orb-icon" id="signalIcon">↑</div></div>
+            <div class="signal-word bullish" id="signalWord">—</div>
+            <div class="signal-sub" id="signalSub">—</div>
+            <div class="signal-updated" id="signalUpdated">—</div>
           </div>
-          <div class="baro-factors">
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>Yield curve slope</span>
-              <span class="factor-val up">+28bps</span>
+          <!-- Barometers -->
+          <div class="baro-col">
+            <div class="signal-cell">
+              <div class="baro-label">01 / Macroeconomic Barometer</div>
+              <div class="baro-name">Macro Regime</div>
+              <div class="baro-score bullish" id="macroScore">—</div>
+              <div class="baro-score-label bullish" id="macroLabel">—</div>
+              <div style="margin-top:10px">
+                <div class="baro-gauge-track"><div class="baro-gauge-fill bullish" id="macroFill" style="width:0%"></div></div>
+                <div class="baro-gauge-meta"><span>CONTRACTION</span><span>NEUTRAL</span><span>EXPANSION</span></div>
+              </div>
+              <div class="baro-factors" id="macroFactors"></div>
             </div>
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>Credit spreads (HY)</span>
-              <span class="factor-val up">Tightening</span>
-            </div>
-            <div class="baro-factor">
-              <span class="factor-dot flat"></span>
-              <span>ISM Manufacturing</span>
-              <span class="factor-val flat">50.2</span>
-            </div>
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>Money supply M2 growth</span>
-              <span class="factor-val up">+5.4% YoY</span>
-            </div>
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>Leading indicators (LEI)</span>
-              <span class="factor-val up">Positive</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Technical Baro -->
-        <div class="signal-cell">
-          <div class="baro-label">02 / Technical Barometer</div>
-          <div class="baro-name">Price Structure</div>
-          <div class="baro-score bullish" id="techScore">81 / 100</div>
-          <div class="baro-score-label bullish">Trending Up</div>
-          <div class="baro-gauge" style="margin-top:16px;">
-            <div class="baro-gauge-track">
-              <div class="baro-gauge-fill bullish" id="techFill" style="width:81%"></div>
-            </div>
-            <div class="baro-gauge-meta">
-              <span>BREAKDOWN</span><span>RANGE</span><span>BREAKOUT</span>
-            </div>
-          </div>
-          <div class="baro-factors">
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>S&P 500 vs 200-DMA</span>
-              <span class="factor-val up">+6.2% above</span>
-            </div>
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>Market breadth (A/D line)</span>
-              <span class="factor-val up">Expanding</span>
-            </div>
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>VIX regime</span>
-              <span class="factor-val up">15.2 (Low)</span>
-            </div>
-            <div class="baro-factor">
-              <span class="factor-dot up"></span>
-              <span>High-beta vs low-vol</span>
-              <span class="factor-val up">HB outperforming</span>
-            </div>
-            <div class="baro-factor">
-              <span class="factor-dot flat"></span>
-              <span>Momentum (12-1 month)</span>
-              <span class="factor-val flat">Neutral</span>
+            <div class="signal-cell">
+              <div class="baro-label">02 / Technical Barometer</div>
+              <div class="baro-name">Price Structure</div>
+              <div class="baro-score bullish" id="techScore">—</div>
+              <div class="baro-score-label bullish" id="techLabel">—</div>
+              <div style="margin-top:10px">
+                <div class="baro-gauge-track"><div class="baro-gauge-fill bullish" id="techFill" style="width:0%"></div></div>
+                <div class="baro-gauge-meta"><span>BREAKDOWN</span><span>RANGE</span><span>BREAKOUT</span></div>
+              </div>
+              <div class="baro-factors" id="techFactors"></div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
-  </div>
-</section>
-
-<!-- SIGNAL HISTORY CHART -->
-<section class="history-section">
-  <div class="wrap">
-    <p class="section-label">/ Signal History — 24 Months</p>
-    <div class="history-chart fade-in">
-      <div class="history-chart-title">MODEL SIGNAL · MAY 2024 — MAY 2026</div>
-      <div class="timeline" id="timeline"></div>
-      <div class="timeline-labels">
-        <span>May 2024</span>
-        <span>Aug 2024</span>
-        <span>Nov 2024</span>
-        <span>Feb 2025</span>
-        <span>May 2025</span>
-        <span>Aug 2025</span>
-        <span>Nov 2025</span>
-        <span>Feb 2026</span>
-        <span>May 2026</span>
+    <!-- AI NARRATIVE -->
+    <div class="narrative-section">
+      <p class="section-label">/ AI Model Narrative</p>
+      <div class="narrative-box fade-in">
+        <div class="narrative-header">⬡ CLAUDE AI ANALYSIS · COMPUTED <span id="narrativeTime">—</span></div>
+        <div class="narrative-text" id="narrativeText">—</div>
       </div>
-      <div class="history-legend">
-        <div class="legend-item">
-          <div class="legend-dot" style="background:var(--green)"></div>
-          BULLISH / LONG
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot" style="background:var(--red)"></div>
-          BEARISH / SHORT
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot" style="background:var(--amber)"></div>
-          NEUTRAL / REDUCE
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot" style="background:var(--dim)"></div>
-          CASH
+    </div>
+
+    <!-- ASSET SIGNALS -->
+    <div class="section-pad">
+      <p class="section-label">/ Live Asset Signals</p>
+      <div class="selector-tabs">
+        <button class="tab-btn active" onclick="filterAssets('all',this)">All</button>
+        <button class="tab-btn" onclick="filterAssets('equities',this)">Equities</button>
+        <button class="tab-btn" onclick="filterAssets('etf',this)">ETFs</button>
+        <button class="tab-btn" onclick="filterAssets('crypto',this)">Crypto</button>
+        <button class="tab-btn" onclick="filterAssets('commodities',this)">Commodities</button>
+        <button class="tab-btn" onclick="filterAssets('bonds',this)">Bonds</button>
+      </div>
+      <div class="asset-grid fade-in" id="assetGrid"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="section-pad">
+      <p class="section-label">/ Signal History — 24 Months</p>
+      <div class="history-chart fade-in">
+        <div class="history-chart-title">MODEL SIGNAL · MAY 2024 — MAY 2026</div>
+        <div class="timeline" id="timeline"></div>
+        <div class="timeline-labels"><span>May 24</span><span>Aug 24</span><span>Nov 24</span><span>Feb 25</span><span>May 25</span><span>Aug 25</span><span>Nov 25</span><span>Feb 26</span><span>May 26</span></div>
+        <div class="history-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>BULLISH</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>BEARISH</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>NEUTRAL</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--dim)"></div>CASH</div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- BACKTEST REGIME TABLE -->
-<section class="regime-section">
-  <div class="wrap">
-    <p class="section-label">/ Historical Regime Performance</p>
-    <div class="regime-table fade-in">
-      <div class="regime-row header">
-        <div class="regime-cell header-cell">Period</div>
-        <div class="regime-cell header-cell">Event / Context</div>
-        <div class="regime-cell header-cell">Signal</div>
-        <div class="regime-cell header-cell">Model Return</div>
-      </div>
-      <div class="regime-row">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2000 – 2002</div>
-        <div class="regime-cell">Dot-Com Crash &amp; Bear Market</div>
-        <div class="regime-cell"><span class="regime-tag cash">CASH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+4.1%</span></div>
-      </div>
-      <div class="regime-row">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2003 – 2007</div>
-        <div class="regime-cell">Recovery &amp; Credit Expansion</div>
-        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+182%</span></div>
-      </div>
-      <div class="regime-row">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2008 – 2009</div>
-        <div class="regime-cell">Global Financial Crisis</div>
-        <div class="regime-cell"><span class="regime-tag bear">BEARISH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+31.2%</span></div>
-      </div>
-      <div class="regime-row">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2010 – 2019</div>
-        <div class="regime-cell">Long Bull Market / QE Cycle</div>
-        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+341%</span></div>
-      </div>
-      <div class="regime-row">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">Feb – Mar 2020</div>
-        <div class="regime-cell">COVID Crash</div>
-        <div class="regime-cell"><span class="regime-tag bear">BEARISH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+18.7%</span></div>
-      </div>
-      <div class="regime-row">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2022</div>
-        <div class="regime-cell">Fed Rate Hike Cycle / Inflation</div>
-        <div class="regime-cell"><span class="regime-tag cash">CASH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+3.8%</span></div>
-      </div>
-      <div class="regime-row">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2023 – 2025</div>
-        <div class="regime-cell">AI Bull Market / Soft Landing</div>
-        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+148%</span></div>
-      </div>
-      <div class="regime-row" style="background:rgba(0,229,160,0.03)">
-        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">Apr 2026 →</div>
-        <div class="regime-cell" style="color:#dce8f4;font-weight:500">Current Regime</div>
-        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
-        <div class="regime-cell"><span class="perf-pos">+11.2%</span></div>
+    <!-- REGIME TABLE -->
+    <div class="section-pad">
+      <p class="section-label">/ Historical Regime Performance</p>
+      <div class="regime-table fade-in">
+        <div class="regime-row header">
+          <div class="regime-cell hdr">Period</div>
+          <div class="regime-cell hdr">Event / Context</div>
+          <div class="regime-cell hdr">Signal</div>
+          <div class="regime-cell hdr">Model Return</div>
+        </div>
+        <div class="regime-row"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">2000–2002</div><div class="regime-cell">Dot-Com Crash</div><div class="regime-cell"><span class="regime-tag cash">CASH</span></div><div class="regime-cell"><span class="perf-pos">+4.1%</span></div></div>
+        <div class="regime-row"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">2003–2007</div><div class="regime-cell">Credit Expansion Bull Market</div><div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div><div class="regime-cell"><span class="perf-pos">+182%</span></div></div>
+        <div class="regime-row"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">2008–2009</div><div class="regime-cell">Global Financial Crisis</div><div class="regime-cell"><span class="regime-tag bear">BEARISH</span></div><div class="regime-cell"><span class="perf-pos">+31.2%</span></div></div>
+        <div class="regime-row"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">2010–2019</div><div class="regime-cell">QE Bull Market Cycle</div><div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div><div class="regime-cell"><span class="perf-pos">+341%</span></div></div>
+        <div class="regime-row"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">Feb–Mar 2020</div><div class="regime-cell">COVID Flash Crash</div><div class="regime-cell"><span class="regime-tag bear">BEARISH</span></div><div class="regime-cell"><span class="perf-pos">+18.7%</span></div></div>
+        <div class="regime-row"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">2022</div><div class="regime-cell">Fed Rate Hike Cycle / Inflation</div><div class="regime-cell"><span class="regime-tag cash">CASH</span></div><div class="regime-cell"><span class="perf-pos">+3.8%</span></div></div>
+        <div class="regime-row"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">2023–2025</div><div class="regime-cell">AI Bull Market / Soft Landing</div><div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div><div class="regime-cell"><span class="perf-pos">+148%</span></div></div>
+        <div class="regime-row" style="background:rgba(0,229,160,.02)"><div class="regime-cell" style="font-family:var(--font-mono);font-size:11px;color:var(--muted)">2026 →</div><div class="regime-cell" style="color:#dce8f4;font-weight:500">Current (AI-computed)</div><div class="regime-cell"><span class="regime-tag bull" id="currentRegimeTag">—</span></div><div class="regime-cell"><span class="perf-pos">Live</span></div></div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ASSET SIGNAL TABLE -->
-<section class="selector-section">
-  <div class="wrap">
-    <p class="section-label">/ Current Asset Signals</p>
-    <div class="selector-tabs">
-      <button class="tab-btn active" onclick="filterAssets('all',this)">All</button>
-      <button class="tab-btn" onclick="filterAssets('equities',this)">Equities</button>
-      <button class="tab-btn" onclick="filterAssets('etf',this)">ETFs</button>
-      <button class="tab-btn" onclick="filterAssets('crypto',this)">Crypto</button>
-      <button class="tab-btn" onclick="filterAssets('commodities',this)">Commodities</button>
-      <button class="tab-btn" onclick="filterAssets('bonds',this)">Bonds</button>
-    </div>
-    <div class="asset-grid fade-in" id="assetGrid"></div>
-  </div>
-</section>
-
-<!-- METHODOLOGY -->
-<section class="method-section">
-  <div class="wrap">
-    <p class="section-label">/ Model Architecture</p>
-    <div class="method-grid fade-in">
-      <div class="method-card">
-        <div class="method-num">01</div>
-        <div class="method-title">Macroeconomic Barometer</div>
-        <div class="method-desc">
-          Monitors yield curve dynamics, credit spread regimes, leading indicators, money supply, and global risk appetite across 18 macro variables. Generates a score from 0–100.
+    <!-- METHODOLOGY -->
+    <div class="section-pad">
+      <p class="section-label">/ Model Architecture</p>
+      <div class="method-grid fade-in">
+        <div class="method-card">
+          <div class="method-num">01</div>
+          <div class="method-title">Live Market Data</div>
+          <div class="method-desc">Real-time quotes fetched on every refresh via Yahoo Finance for 18 instruments across equities, ETFs, crypto, and commodities including prices, 1-day change, and moving average positioning.</div>
         </div>
-      </div>
-      <div class="method-card">
-        <div class="method-num">02</div>
-        <div class="method-title">Technical Barometer</div>
-        <div class="method-desc">
-          Evaluates price structure, trend persistence, market breadth, volatility regime, and cross-asset momentum signals. Independent of the macro barometer — both must align before a signal is issued.
+        <div class="method-card">
+          <div class="method-num">02</div>
+          <div class="method-title">Claude AI Computation</div>
+          <div class="method-desc">Live market data is passed to Claude AI which simultaneously analyses macroeconomic and technical dimensions, scores each barometer 0–100, and generates a plain-English regime narrative.</div>
         </div>
-      </div>
-      <div class="method-card">
-        <div class="method-num">03</div>
-        <div class="method-title">Signal Generation & Risk Regime</div>
-        <div class="method-desc">
-          When both barometers agree, a directional signal is generated. Disagreement defaults to NEUTRAL (reduce exposure). The model transitions to cash when macro conditions deteriorate before the technical structure breaks.
+        <div class="method-card">
+          <div class="method-num">03</div>
+          <div class="method-title">Dual-Barometer Signal</div>
+          <div class="method-desc">Both barometers must score ≥60 for BULLISH, ≤40 for BEARISH. Any disagreement defaults to NEUTRAL. The model protects capital first — uncertainty means reduce, not guess.</div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- DISCLAIMER -->
+  </div><!-- /mainContent -->
+</div><!-- /wrap -->
+
 <div class="disclaimer">
   <div class="wrap">
-    <p class="disclaimer-text">
-      DISCLAIMER — This model and all content is provided for informational and educational purposes only. Nothing published here constitutes financial advice, investment advice, or a solicitation to buy or sell any security. Past backtested performance does not guarantee future results. All investing involves risk, including the possible loss of principal. By accessing this content, you acknowledge that the authors may hold positions in assets discussed at any time without notice. Treat all signals as research inputs, not instructions.
-    </p>
+    <p class="disclaimer-text">DISCLAIMER — This model and all content is provided for informational and educational purposes only. Nothing here constitutes financial advice, investment advice, or a solicitation to buy or sell any security. AI-generated signals reflect quantitative pattern analysis only and are not investment recommendations. Past backtested performance does not guarantee future results. All investing involves risk including possible loss of principal. By accessing this content you acknowledge that the authors may hold positions in assets discussed at any time without notice. Treat all signals as research inputs, not instructions. Always consult a qualified financial adviser before making investment decisions.</p>
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
-  <div class="wrap">
-    QUANT/SIGNAL MODEL · TACTICAL MARKET BAROMETER · DATA UPDATES DAILY · 16:00 AEST
-  </div>
+  <div class="wrap">QUANT/SIGNAL MODEL v4.0 · AI-POWERED BY CLAUDE · DATA: YAHOO FINANCE · <span id="footerTime">—</span></div>
 </footer>
 
-
 <script>
-// ── TIMELINE CHART ──
-const signals = [];
-const types = ['bull','bull','bull','neut','cash','bear','bear','cash','neut','bull','bull','bull','bull','bull','neut','bull','bull','bull','bull','bull','bull','bull','bull','bull'];
-const heights = [65,70,68,45,30,55,60,35,42,72,75,74,78,80,50,76,78,82,80,83,85,81,82,84];
-
-const timeline = document.getElementById('timeline');
-types.forEach((type, i) => {
-  const bar = document.createElement('div');
-  bar.className = `timeline-bar ${type}`;
-  bar.style.height = heights[i] + 'px';
-  const labels = {bull:'Bullish', bear:'Bearish', neut:'Neutral', cash:'Cash'};
-  bar.setAttribute('data-tip', labels[type]);
-  timeline.appendChild(bar);
-});
-
-// ── ASSET DATA ──
-const assets = [
-  { ticker:'SPY', name:'S&P 500 ETF', sig:'long', change:'+1.4%', cat:'etf' },
-  { ticker:'QQQ', name:'Nasdaq 100 ETF', sig:'long', change:'+1.9%', cat:'etf' },
-  { ticker:'TQQQ', name:'3× Nasdaq', sig:'long', change:'+5.1%', cat:'etf' },
-  { ticker:'IWM', name:'Russell 2000', sig:'watch', change:'+0.3%', cat:'etf' },
-  { ticker:'GLD', name:'Gold ETF', sig:'long', change:'+0.8%', cat:'commodities' },
-  { ticker:'SLV', name:'Silver ETF', sig:'watch', change:'-0.2%', cat:'commodities' },
-  { ticker:'USO', name:'Oil ETF', sig:'cash', change:'-1.1%', cat:'commodities' },
-  { ticker:'TLT', name:'20Y Treasury', sig:'cash', change:'-0.4%', cat:'bonds' },
-  { ticker:'HYG', name:'High Yield Bond', sig:'long', change:'+0.3%', cat:'bonds' },
-  { ticker:'BTC', name:'Bitcoin', sig:'long', change:'+3.2%', cat:'crypto' },
-  { ticker:'ETH', name:'Ethereum', sig:'long', change:'+4.1%', cat:'crypto' },
-  { ticker:'SOL', name:'Solana', sig:'watch', change:'+1.7%', cat:'crypto' },
-  { ticker:'NVDA', name:'Nvidia Corp', sig:'long', change:'+2.6%', cat:'equities' },
-  { ticker:'AAPL', name:'Apple Inc', sig:'long', change:'+1.1%', cat:'equities' },
-  { ticker:'META', name:'Meta Platforms', sig:'long', change:'+1.8%', cat:'equities' },
-  { ticker:'XBI', name:'Biotech ETF', sig:'watch', change:'+0.5%', cat:'etf' },
-  { ticker:'KRE', name:'Regional Banks', sig:'cash', change:'-0.7%', cat:'etf' },
-  { ticker:'XOM', name:'ExxonMobil', sig:'watch', change:'+0.1%', cat:'equities' },
+// ── ASSET DEFINITIONS ──────────────────────────────────────────────────────
+const ASSETS = [
+  {ticker:'SPY',   name:'S&P 500 ETF',      cat:'etf',         yf:'SPY'},
+  {ticker:'QQQ',   name:'Nasdaq 100 ETF',    cat:'etf',         yf:'QQQ'},
+  {ticker:'IWM',   name:'Russell 2000 ETF',  cat:'etf',         yf:'IWM'},
+  {ticker:'TQQQ',  name:'3× Nasdaq Lev.',    cat:'etf',         yf:'TQQQ'},
+  {ticker:'GLD',   name:'Gold ETF',          cat:'commodities', yf:'GLD'},
+  {ticker:'SLV',   name:'Silver ETF',        cat:'commodities', yf:'SLV'},
+  {ticker:'USO',   name:'Oil ETF',           cat:'commodities', yf:'USO'},
+  {ticker:'TLT',   name:'20Y Treasury ETF',  cat:'bonds',       yf:'TLT'},
+  {ticker:'HYG',   name:'High Yield Bond',   cat:'bonds',       yf:'HYG'},
+  {ticker:'NVDA',  name:'Nvidia Corp',       cat:'equities',    yf:'NVDA'},
+  {ticker:'AAPL',  name:'Apple Inc',         cat:'equities',    yf:'AAPL'},
+  {ticker:'META',  name:'Meta Platforms',    cat:'equities',    yf:'META'},
+  {ticker:'MSFT',  name:'Microsoft Corp',    cat:'equities',    yf:'MSFT'},
+  {ticker:'XBI',   name:'Biotech ETF',       cat:'etf',         yf:'XBI'},
+  {ticker:'BTC-USD',name:'Bitcoin',          cat:'crypto',      yf:'BTC-USD'},
+  {ticker:'ETH-USD',name:'Ethereum',         cat:'crypto',      yf:'ETH-USD'},
+  {ticker:'SOL-USD',name:'Solana',           cat:'crypto',      yf:'SOL-USD'},
+  {ticker:'VIX',   name:'Volatility Index',  cat:'etf',         yf:'^VIX'},
 ];
 
+// ── STATE ──────────────────────────────────────────────────────────────────
+let allAssets = [];
+let currentFilter = 'all';
+let apiKey = sessionStorage.getItem('qsm_key') || '';
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+window.onload = () => {
+  buildTimeline();
+  if (apiKey) {
+    document.getElementById('apiKeySection').style.display = 'none';
+    runModel();
+  }
+};
+
+function saveKeyAndRun() {
+  const k = document.getElementById('apiKeyInput').value.trim();
+  if (!k.startsWith('sk-ant')) {
+    alert('Please enter a valid Anthropic API key (starts with sk-ant-)');
+    return;
+  }
+  apiKey = k;
+  sessionStorage.setItem('qsm_key', k);
+  document.getElementById('apiKeySection').style.display = 'none';
+  runModel();
+}
+
+// ── MAIN ORCHESTRATOR ──────────────────────────────────────────────────────
+async function runModel() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  showLoading(true);
+  showError(false);
+  document.getElementById('mainContent').style.display = 'none';
+  try {
+    setStep('Fetching live market data from Yahoo Finance...');
+    const marketData = await fetchMarketData();
+    setStep('Sending live data to Claude AI for analysis...');
+    const aiResult = await computeWithClaude(marketData);
+    setStep('Rendering AI-computed signals...');
+    renderAll(aiResult, marketData);
+    showLoading(false);
+    document.getElementById('mainContent').style.display = 'block';
+  } catch(e) {
+    showLoading(false);
+    showError(true, e.message || 'Unknown error. Check your API key and try again.');
+    console.error(e);
+  }
+  btn.disabled = false;
+}
+
+// ── FETCH MARKET DATA ──────────────────────────────────────────────────────
+async function fetchMarketData() {
+  const symbols = ASSETS.map(a => a.yf).join(',');
+  const yfUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&fields=regularMarketPrice,regularMarketChangePercent,regularMarketChange,regularMarketVolume,fiftyDayAverage,twoHundredDayAverage`;
+  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(yfUrl)}`;
+  const resp = await fetch(proxy);
+  if (!resp.ok) throw new Error('Market data fetch failed (HTTP ' + resp.status + '). Try again shortly.');
+  const outer = await resp.json();
+  let inner;
+  try { inner = JSON.parse(outer.contents); } catch(e) { throw new Error('Market data parse error. Yahoo Finance may be temporarily unavailable.'); }
+  const quotes = inner?.quoteResponse?.result;
+  if (!quotes || quotes.length === 0) throw new Error('No market data returned. Markets may be closed or the proxy is rate-limited. Try again in a minute.');
+  const data = {};
+  quotes.forEach(q => {
+    data[q.symbol] = {
+      price: q.regularMarketPrice,
+      change: q.regularMarketChangePercent,
+      changeAbs: q.regularMarketChange,
+      volume: q.regularMarketVolume,
+      ma50: q.fiftyDayAverage,
+      ma200: q.twoHundredDayAverage,
+    };
+  });
+  return data;
+}
+
+// ── CLAUDE AI COMPUTATION ──────────────────────────────────────────────────
+async function computeWithClaude(marketData) {
+  const lines = [];
+  ASSETS.forEach(a => {
+    const d = marketData[a.yf];
+    if (!d) return;
+    const ma200rel = d.ma200 ? (((d.price - d.ma200)/d.ma200)*100).toFixed(1) : 'N/A';
+    const ma50rel  = d.ma50  ? (((d.price - d.ma50) /d.ma50) *100).toFixed(1) : 'N/A';
+    lines.push(`${a.ticker}: price=${d.price?.toFixed(2)}, 1d%=${d.change?.toFixed(2)}, vs200MA=${ma200rel}%, vs50MA=${ma50rel}%`);
+  });
+
+  const today = new Date().toLocaleDateString('en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const prompt = `You are a quantitative market strategist. Today is ${today}. Analyse this live market data and output ONLY a valid JSON object (no markdown, no explanation):
+
+LIVE DATA:
+${lines.join('\n')}
+
+Required JSON structure:
+{
+  "macroScore": <integer 0-100>,
+  "macroLabel": <"Deep Contraction"|"Contraction"|"Neutral"|"Expansionary"|"Strong Expansion">,
+  "techScore": <integer 0-100>,
+  "techLabel": <"Severe Breakdown"|"Downtrend"|"Range-Bound"|"Trending Up"|"Strong Breakout">,
+  "signal": <"BULLISH"|"NEUTRAL"|"BEARISH">,
+  "signalSub": <5-8 word rationale string>,
+  "regime": <"Risk-On"|"Cautious"|"Risk-Off"|"Defensive">,
+  "regimeLabel": <short confirmation label>,
+  "narrative": <3-4 sentence plain-English analysis specific to today's data, covering key observations, risks, and positioning implication>,
+  "macroFactors": [5 objects: {"name":"...","value":"...","dir":"up"|"down"|"flat"}],
+  "techFactors":  [5 objects: {"name":"...","value":"...","dir":"up"|"down"|"flat"}],
+  "assetSignals": {"SPY":"long"|"short"|"cash"|"watch", "QQQ":..., "IWM":..., "TQQQ":..., "GLD":..., "SLV":..., "USO":..., "TLT":..., "HYG":..., "NVDA":..., "AAPL":..., "META":..., "MSFT":..., "XBI":..., "BTC-USD":..., "ETH-USD":..., "SOL-USD":..., "VIX":...}
+}
+
+RULES:
+- macroScore: use HYG (credit), VIX (risk), SPY/QQQ vs 200MA (trend), IWM relative performance (breadth), gold/USD signals
+- techScore: price vs moving averages, breadth (IWM vs SPY gap), momentum, VIX regime, high vs low beta
+- signal: BULLISH requires macro>=60 AND tech>=60; BEARISH requires macro<=40 AND tech<=40; otherwise NEUTRAL
+- narrative: cite specific numbers from the data (e.g. "SPY is X% above its 200-day MA", "VIX at Y suggests...")
+- macroFactors/techFactors: derive from actual data above, not generic statements
+- assetSignals: long=above key MAs with positive momentum; short=breaking down; cash=avoid exposure; watch=mixed signals`;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 1500,
+      messages: [{role:'user', content: prompt}]
+    })
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(()=>({}));
+    throw new Error('Claude API: ' + (err?.error?.message || 'HTTP ' + resp.status + '. Check your API key.'));
+  }
+  const data = await resp.json();
+  const text = data.content?.find(b=>b.type==='text')?.text || '';
+  const clean = text.replace(/```json|```/gi,'').trim();
+  try {
+    return JSON.parse(clean);
+  } catch(e) {
+    const m = clean.match(/\{[\s\S]*\}/);
+    if (m) return JSON.parse(m[0]);
+    throw new Error('Could not parse Claude response. Try refreshing.');
+  }
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function renderAll(ai, market) {
+  const now = new Date();
+  const dateStr  = now.toLocaleDateString('en-AU',{day:'numeric',month:'short'});
+  const timeStr  = now.toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'}) + ' AEST';
+  const fullStr  = now.toLocaleDateString('en-AU',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + ' · ' + timeStr;
+
+  // Stats
+  document.getElementById('statDate').textContent = dateStr;
+  document.getElementById('statTime').textContent = timeStr;
+  const mC = scoreClass(ai.macroScore), tC = scoreClass(ai.techScore);
+  document.getElementById('statMacro').textContent = ai.macroScore;
+  const mEl = document.getElementById('statMacroLabel');
+  mEl.className = 'stat-delta ' + (mC==='bullish'?'pos':mC==='bearish'?'neg':'neu');
+  mEl.textContent = ai.macroLabel;
+  document.getElementById('statTech').textContent = ai.techScore;
+  const tEl = document.getElementById('statTechLabel');
+  tEl.className = 'stat-delta ' + (tC==='bullish'?'pos':tC==='bearish'?'neg':'neu');
+  tEl.textContent = ai.techLabel;
+  document.getElementById('statRegime').textContent = ai.regime;
+  document.getElementById('statRegimeLabel').textContent = ai.regimeLabel;
+
+  // Signal orb
+  const sigC = ai.signal==='BULLISH'?'bullish':ai.signal==='BEARISH'?'bearish':'neutral';
+  const sigI = ai.signal==='BULLISH'?'↑':ai.signal==='BEARISH'?'↓':'→';
+  document.getElementById('signalOrb').className = 'signal-orb ' + sigC;
+  document.getElementById('signalIcon').textContent = sigI;
+  document.getElementById('signalWord').className = 'signal-word ' + sigC;
+  document.getElementById('signalWord').textContent = ai.signal;
+  document.getElementById('signalSub').textContent = ai.signalSub;
+  document.getElementById('signalUpdated').textContent = 'AI computed: ' + fullStr;
+
+  // Macro baro
+  document.getElementById('macroScore').className = 'baro-score ' + mC;
+  document.getElementById('macroScore').textContent = ai.macroScore + ' / 100';
+  document.getElementById('macroLabel').className = 'baro-score-label ' + mC;
+  document.getElementById('macroLabel').textContent = ai.macroLabel;
+  document.getElementById('macroFill').className = 'baro-gauge-fill ' + mC;
+  setTimeout(()=>{document.getElementById('macroFill').style.width=ai.macroScore+'%'},100);
+  renderFactors('macroFactors', ai.macroFactors);
+
+  // Tech baro
+  document.getElementById('techScore').className = 'baro-score ' + tC;
+  document.getElementById('techScore').textContent = ai.techScore + ' / 100';
+  document.getElementById('techLabel').className = 'baro-score-label ' + tC;
+  document.getElementById('techLabel').textContent = ai.techLabel;
+  document.getElementById('techFill').className = 'baro-gauge-fill ' + tC;
+  setTimeout(()=>{document.getElementById('techFill').style.width=ai.techScore+'%'},200);
+  renderFactors('techFactors', ai.techFactors);
+
+  // Narrative
+  document.getElementById('narrativeTime').textContent = timeStr;
+  document.getElementById('narrativeText').textContent = ai.narrative;
+
+  // Current regime tag
+  const rtag = document.getElementById('currentRegimeTag');
+  rtag.textContent = ai.signal;
+  rtag.className = 'regime-tag ' + (sigC==='neutral'?'neut':sigC==='bullish'?'bull':'bear');
+
+  // Assets — merge AI signals with live prices
+  allAssets = ASSETS.map(a => {
+    const d = market[a.yf] || {};
+    const sig = (ai.assetSignals||{})[a.ticker] || 'watch';
+    const chg = d.change;
+    return {
+      ...a,
+      signal: sig,
+      change: chg!=null ? (chg>=0?'+':'') + chg.toFixed(2)+'%' : '—',
+      changeDir: chg>0?'pos':chg<0?'neg':'',
+      price: d.price ? '$'+d.price.toFixed(2) : '—',
+    };
+  });
+  renderAssets(currentFilter);
+
+  // Header / footer
+  document.getElementById('lastUpdateBadge').innerHTML = '<span class="live-dot"></span>LIVE · ' + timeStr;
+  document.getElementById('footerTime').textContent = fullStr;
+}
+
+function scoreClass(s){ return s>=60?'bullish':s<=40?'bearish':'neutral'; }
+
+function renderFactors(id, factors) {
+  if (!factors) return;
+  document.getElementById(id).innerHTML = factors.map(f=>`
+    <div class="baro-factor">
+      <span class="factor-dot ${f.dir==='up'?'up':f.dir==='down'?'down':'flat'}"></span>
+      <span>${f.name}</span>
+      <span class="factor-val ${f.dir==='up'?'up':f.dir==='down'?'down':'flat'}">${f.value}</span>
+    </div>`).join('');
+}
+
 function renderAssets(filter) {
-  const grid = document.getElementById('assetGrid');
-  const filtered = filter === 'all' ? assets : assets.filter(a => a.cat === filter);
-  grid.innerHTML = filtered.map(a => {
-    const isPos = a.change.startsWith('+');
-    const isNeg = a.change.startsWith('-');
-    const sigLabels = { long:'LONG', short:'SHORT', cash:'CASH', watch:'WATCH' };
-    return `
-      <div class="asset-card">
-        <div class="asset-ticker">${a.ticker}</div>
-        <div class="asset-name">${a.name}</div>
-        <div class="asset-signal">
-          <span class="asset-sig-tag ${a.sig}">${sigLabels[a.sig]}</span>
-          <span class="asset-change ${isPos?'pos':isNeg?'neg':''}">${a.change}</span>
-        </div>
+  const list = filter==='all' ? allAssets : allAssets.filter(a=>a.cat===filter);
+  const labels = {long:'LONG',short:'SHORT',cash:'CASH',watch:'WATCH'};
+  document.getElementById('assetGrid').innerHTML = list.map(a=>`
+    <div class="asset-card">
+      <div class="asset-ticker">${a.ticker}</div>
+      <div class="asset-name">${a.name}</div>
+      <div class="asset-signal-row">
+        <span class="asset-sig-tag ${a.signal}">${labels[a.signal]||'—'}</span>
+        <span class="asset-change ${a.changeDir}">${a.change}</span>
       </div>
-    `;
-  }).join('');
+      <div class="asset-price">${a.price}</div>
+    </div>`).join('');
 }
 
 function filterAssets(cat, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  currentFilter = cat;
   renderAssets(cat);
 }
 
-renderAssets('all');
+// ── TIMELINE ───────────────────────────────────────────────────────────────
+function buildTimeline() {
+  const types=['bull','bull','bull','neut','cash','bear','bear','cash','neut','bull','bull','bull','bull','bull','neut','bull','bull','bull','bull','bull','bull','bull','bull','bull'];
+  const hts=[65,70,68,45,30,55,60,35,42,72,75,74,78,80,50,76,78,82,80,83,85,81,82,84];
+  const tl=document.getElementById('timeline');
+  types.forEach((t,i)=>{
+    const b=document.createElement('div');
+    b.className='timeline-bar '+t;
+    b.style.height=hts[i]+'px';
+    tl.appendChild(b);
+  });
+}
 
-// ── SIGNAL TOGGLE DEMO ──
-// Users can click the orb to cycle through states to see how it looks
-const states = [
-  { word:'BULLISH', sub:'Full risk-on positioning', cls:'bullish', icon:'↑' },
-  { word:'NEUTRAL', sub:'Reduce exposure — barometers diverging', cls:'neutral', icon:'→' },
-  { word:'BEARISH', sub:'Risk-off — capital preservation mode', cls:'bearish', icon:'↓' },
-];
-let stateIdx = 0;
-document.getElementById('signalOrb').addEventListener('click', () => {
-  stateIdx = (stateIdx + 1) % states.length;
-  const s = states[stateIdx];
-  const orb = document.getElementById('signalOrb');
-  const word = document.getElementById('signalWord');
-  const sub = document.getElementById('signalSub');
-  orb.className = `signal-orb ${s.cls}`;
-  orb.querySelector('.signal-orb-icon').textContent = s.icon;
-  word.className = `signal-word ${s.cls}`;
-  word.textContent = s.word;
-  sub.textContent = s.sub;
-});
+// ── HELPERS ────────────────────────────────────────────────────────────────
+function showLoading(s){ document.getElementById('loadingBox').style.display=s?'block':'none'; }
+function showError(s,m){ const e=document.getElementById('errorBox'); e.style.display=s?'block':'none'; if(m) document.getElementById('errorMsg').textContent='⚠ '+m; }
+function setStep(m){ document.getElementById('loadingStep').textContent=m; }
 </script>
 </body>
 </html>
