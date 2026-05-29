@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUANT SIGNAL MODEL — TACTICAL MARKET BAROMETER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080c10;
+    --surface: #0d1219;
+    --border: #1a2330;
+    --border-bright: #243040;
+    --text: #c8d4e0;
+    --muted: #4a5f72;
+    --dim: #2a3a4a;
+    --green: #00e5a0;
+    --green-dim: #003d2b;
+    --green-glow: rgba(0,229,160,0.15);
+    --red: #ff3b5c;
+    --red-dim: #3d0010;
+    --red-glow: rgba(255,59,92,0.15);
+    --amber: #ffb300;
+    --amber-dim: #3d2900;
+    --blue: #4da8ff;
+    --blue-dim: #0a1e35;
+    --accent: #00e5a0;
+    --font-mono: 'Space Mono', monospace;
+    --font-display: 'DM Serif Display', serif;
+    --font-body: 'Barlow Condensed', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* Scanlines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .logo span {
+    color: var(--accent);
+  }
+  .header-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    border: 1px solid var(--border-bright);
+    padding: 4px 12px;
+    text-transform: uppercase;
+  }
+  .live-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-right: 6px;
+    animation: pulse 1.8s ease-in-out infinite;
+    vertical-align: middle;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,160,0.6); }
+    50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(0,229,160,0); }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 1.05;
+    color: #e8f0f8;
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+  .hero h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+  .hero-desc {
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 580px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── MAIN SIGNAL CARD ── */
+  .signal-section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  .signal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2px;
+  }
+  .signal-cell {
+    background: var(--surface);
+    padding: 32px;
+  }
+  .signal-cell.full-width {
+    grid-column: 1 / -1;
+  }
+
+  /* Big Signal Indicator */
+  .big-signal {
+    text-align: center;
+    padding: 48px 32px;
+  }
+  .signal-status-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .signal-orb {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 28px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .signal-orb.bullish {
+    background: radial-gradient(circle at 40% 40%, #00e5a0, #00a86b);
+    box-shadow: 0 0 40px rgba(0,229,160,0.5), 0 0 80px rgba(0,229,160,0.2), inset 0 0 30px rgba(255,255,255,0.1);
+    animation: orbpulse-green 3s ease-in-out infinite;
+  }
+  .signal-orb.bearish {
+    background: radial-gradient(circle at 40% 40%, #ff3b5c, #cc1a38);
+    box-shadow: 0 0 40px rgba(255,59,92,0.5), 0 0 80px rgba(255,59,92,0.2), inset 0 0 30px rgba(255,255,255,0.1);
+    animation: orbpulse-red 3s ease-in-out infinite;
+  }
+  .signal-orb.neutral {
+    background: radial-gradient(circle at 40% 40%, #ffb300, #cc8800);
+    box-shadow: 0 0 40px rgba(255,179,0,0.5), 0 0 80px rgba(255,179,0,0.2), inset 0 0 30px rgba(255,255,255,0.1);
+  }
+  .signal-orb-icon {
+    font-size: 42px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  }
+  @keyframes orbpulse-green {
+    0%, 100% { box-shadow: 0 0 40px rgba(0,229,160,0.5), 0 0 80px rgba(0,229,160,0.2); }
+    50% { box-shadow: 0 0 60px rgba(0,229,160,0.7), 0 0 120px rgba(0,229,160,0.3); }
+  }
+  @keyframes orbpulse-red {
+    0%, 100% { box-shadow: 0 0 40px rgba(255,59,92,0.5), 0 0 80px rgba(255,59,92,0.2); }
+    50% { box-shadow: 0 0 60px rgba(255,59,92,0.7), 0 0 120px rgba(255,59,92,0.3); }
+  }
+
+  .signal-word {
+    font-family: var(--font-display);
+    font-size: 3.2rem;
+    line-height: 1;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  .signal-word.bullish { color: var(--green); }
+  .signal-word.bearish { color: var(--red); }
+  .signal-word.neutral { color: var(--amber); }
+
+  .signal-sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .signal-updated {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--dim);
+    margin-top: 16px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Barometer cells */
+  .baro-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .baro-name {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    color: #dce8f4;
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+  .baro-gauge {
+    margin-bottom: 20px;
+  }
+  .baro-gauge-track {
+    height: 6px;
+    background: var(--border-bright);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .baro-gauge-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .baro-gauge-fill.bullish { background: linear-gradient(90deg, #00a86b, #00e5a0); }
+  .baro-gauge-fill.bearish { background: linear-gradient(90deg, #cc1a38, #ff3b5c); }
+  .baro-gauge-fill.neutral { background: linear-gradient(90deg, #cc8800, #ffb300); }
+
+  .baro-gauge-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--dim);
+  }
+  .baro-score {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .baro-score.bullish { color: var(--green); }
+  .baro-score.bearish { color: var(--red); }
+  .baro-score.neutral { color: var(--amber); }
+  .baro-score-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .baro-score-label.bullish { color: rgba(0,229,160,0.7); }
+  .baro-score-label.bearish { color: rgba(255,59,92,0.7); }
+  .baro-score-label.neutral { color: rgba(255,179,0,0.7); }
+
+  .baro-factors {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .baro-factor {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--text);
+  }
+  .factor-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .factor-dot.up { background: var(--green); }
+  .factor-dot.down { background: var(--red); }
+  .factor-dot.flat { background: var(--amber); }
+  .factor-val {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .factor-val.up { color: var(--green); }
+  .factor-val.down { color: var(--red); }
+  .factor-val.flat { color: var(--amber); }
+
+  /* ── SIGNAL HISTORY ── */
+  .history-section {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .history-chart {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-top: 24px;
+  }
+  .history-chart-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .timeline {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 80px;
+    margin-bottom: 12px;
+  }
+  .timeline-bar {
+    flex: 1;
+    border-radius: 2px 2px 0 0;
+    position: relative;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .timeline-bar:hover { opacity: 0.75; }
+  .timeline-bar.bull { background: var(--green); }
+  .timeline-bar.bear { background: var(--red); }
+  .timeline-bar.neut { background: var(--amber); }
+  .timeline-bar.cash { background: var(--dim); }
+  .timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--dim);
+    letter-spacing: 0.1em;
+  }
+  .history-legend {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-bottom: 2px;
+  }
+  .stat-cell {
+    padding: 28px 24px;
+    border-right: 1px solid var(--border);
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: #dce8f4;
+    line-height: 1;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+  .stat-delta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .stat-delta.pos { color: var(--green); }
+  .stat-delta.neg { color: var(--red); }
+  .stat-delta.neu { color: var(--muted); }
+
+  /* ── REGIME TABLE ── */
+  .regime-section {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .regime-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-top: 24px;
+    overflow: hidden;
+  }
+  .regime-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 100px 120px;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .regime-row:last-child { border-bottom: none; }
+  .regime-row.header {
+    background: rgba(255,255,255,0.02);
+  }
+  .regime-cell {
+    padding: 16px 20px;
+    border-right: 1px solid var(--border);
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
+  .regime-cell:last-child { border-right: none; }
+  .regime-cell.header-cell {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .regime-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .regime-tag.bull { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+  .regime-tag.bear { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,59,92,0.3); }
+  .regime-tag.cash { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(77,168,255,0.3); }
+  .regime-tag.neut { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,179,0,0.3); }
+
+  .perf-pos { color: var(--green); font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
+  .perf-neg { color: var(--red); font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
+  .perf-neu { color: var(--muted); font-family: var(--font-mono); font-size: 12px; }
+
+  /* ── SELECTOR ── */
+  .selector-section {
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .selector-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { border-color: var(--border-bright); color: var(--text); }
+  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+  .asset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .asset-card {
+    background: var(--surface);
+    padding: 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .asset-card:hover { background: #111820; }
+  .asset-ticker {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: #dce8f4;
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  .asset-name {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    letter-spacing: 0.03em;
+  }
+  .asset-signal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .asset-sig-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+  .asset-sig-tag.long { background: var(--green-dim); color: var(--green); }
+  .asset-sig-tag.short { background: var(--red-dim); color: var(--red); }
+  .asset-sig-tag.cash { background: var(--blue-dim); color: var(--blue); }
+  .asset-sig-tag.watch { background: var(--amber-dim); color: var(--amber); }
+  .asset-change {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .asset-change.pos { color: var(--green); }
+  .asset-change.neg { color: var(--red); }
+
+  /* ── METHODOLOGY ── */
+  .method-section {
+    padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 28px;
+  }
+  .method-card {
+    background: var(--surface);
+    padding: 32px;
+  }
+  .method-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .method-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: #dce8f4;
+    margin-bottom: 12px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+  .method-desc {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer {
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+  }
+  .disclaimer-text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--dim);
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+    max-width: 900px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.7s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.35s; }
+  .delay-4 { animation-delay: 0.5s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .signal-grid { grid-template-columns: 1fr; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+    .stat-cell { border-bottom: 1px solid var(--border); }
+    .method-grid { grid-template-columns: 1fr; }
+    .asset-grid { grid-template-columns: 1fr 1fr; }
+    .regime-row { grid-template-columns: 1fr 1fr; }
+    .regime-cell:nth-child(3), .regime-cell:nth-child(4) { font-size: 11px; }
+  }
+
+  @media (max-width: 480px) {
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+    .selector-tabs { gap: 4px; }
+    .hero h1 { font-size: 2.2rem; }
+  }
+
+  /* ── TOOLTIP ── */
+  [data-tip] {
+    position: relative;
+  }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a2330;
+    border: 1px solid var(--border-bright);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 6px 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">QUANT<span>/</span>SIGNAL — TACTICAL MARKET BAROMETER</div>
+    <div class="header-badge">
+      <span class="live-dot"></span>
+      UPDATED DAILY
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <p class="hero-label fade-in">Quantitative Strategy Model · v3.2</p>
+    <h1 class="fade-in delay-1">The market tells you<br><em>when to act.</em></h1>
+    <p class="hero-desc fade-in delay-2">
+      A dual-barometer model — macroeconomic + technical — that generates a single, 
+      emotionless signal. Both barometers must agree before the signal moves. 
+      Backtested across five market cycles.
+    </p>
+  </div>
+</section>
+
+<!-- SIGNAL SECTION -->
+<section class="signal-section">
+  <div class="wrap">
+    <p class="section-label">/ Current Model Output</p>
+
+    <!-- Stats strip -->
+    <div class="stats-strip fade-in delay-2">
+      <div class="stat-cell">
+        <div class="stat-label">Signal Since</div>
+        <div class="stat-value">Apr 14</div>
+        <div class="stat-delta pos">+11.2% since entry</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Macro Score</div>
+        <div class="stat-value">74</div>
+        <div class="stat-delta pos">▲ Expansionary</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Technical Score</div>
+        <div class="stat-value">81</div>
+        <div class="stat-delta pos">▲ Trending</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Regime</div>
+        <div class="stat-value" style="font-size:1.5rem">Risk-On</div>
+        <div class="stat-delta neu">Confirmed alignment</div>
+      </div>
+    </div>
+
+    <!-- Main signal grid -->
+    <div class="signal-grid fade-in delay-3">
+
+      <!-- Big signal -->
+      <div class="signal-cell big-signal">
+        <div class="signal-status-label">Overall Model Signal</div>
+        <div class="signal-orb bullish" id="signalOrb">
+          <div class="signal-orb-icon">↑</div>
+        </div>
+        <div class="signal-word bullish" id="signalWord">BULLISH</div>
+        <div class="signal-sub" id="signalSub">Full risk-on positioning</div>
+        <div class="signal-updated" id="signalUpdated">Last computed: May 30, 2026 · 16:00 AEST</div>
+      </div>
+
+      <!-- Barometers right column -->
+      <div style="display:flex;flex-direction:column;gap:2px;">
+
+        <!-- Macro Baro -->
+        <div class="signal-cell">
+          <div class="baro-label">01 / Macroeconomic Barometer</div>
+          <div class="baro-name">Macro Regime</div>
+          <div class="baro-score bullish" id="macroScore">74 / 100</div>
+          <div class="baro-score-label bullish">Expansionary</div>
+          <div class="baro-gauge" style="margin-top:16px;">
+            <div class="baro-gauge-track">
+              <div class="baro-gauge-fill bullish" id="macroFill" style="width:74%"></div>
+            </div>
+            <div class="baro-gauge-meta">
+              <span>CONTRACTION</span><span>NEUTRAL</span><span>EXPANSION</span>
+            </div>
+          </div>
+          <div class="baro-factors">
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>Yield curve slope</span>
+              <span class="factor-val up">+28bps</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>Credit spreads (HY)</span>
+              <span class="factor-val up">Tightening</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot flat"></span>
+              <span>ISM Manufacturing</span>
+              <span class="factor-val flat">50.2</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>Money supply M2 growth</span>
+              <span class="factor-val up">+5.4% YoY</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>Leading indicators (LEI)</span>
+              <span class="factor-val up">Positive</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Technical Baro -->
+        <div class="signal-cell">
+          <div class="baro-label">02 / Technical Barometer</div>
+          <div class="baro-name">Price Structure</div>
+          <div class="baro-score bullish" id="techScore">81 / 100</div>
+          <div class="baro-score-label bullish">Trending Up</div>
+          <div class="baro-gauge" style="margin-top:16px;">
+            <div class="baro-gauge-track">
+              <div class="baro-gauge-fill bullish" id="techFill" style="width:81%"></div>
+            </div>
+            <div class="baro-gauge-meta">
+              <span>BREAKDOWN</span><span>RANGE</span><span>BREAKOUT</span>
+            </div>
+          </div>
+          <div class="baro-factors">
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>S&P 500 vs 200-DMA</span>
+              <span class="factor-val up">+6.2% above</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>Market breadth (A/D line)</span>
+              <span class="factor-val up">Expanding</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>VIX regime</span>
+              <span class="factor-val up">15.2 (Low)</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot up"></span>
+              <span>High-beta vs low-vol</span>
+              <span class="factor-val up">HB outperforming</span>
+            </div>
+            <div class="baro-factor">
+              <span class="factor-dot flat"></span>
+              <span>Momentum (12-1 month)</span>
+              <span class="factor-val flat">Neutral</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SIGNAL HISTORY CHART -->
+<section class="history-section">
+  <div class="wrap">
+    <p class="section-label">/ Signal History — 24 Months</p>
+    <div class="history-chart fade-in">
+      <div class="history-chart-title">MODEL SIGNAL · MAY 2024 — MAY 2026</div>
+      <div class="timeline" id="timeline"></div>
+      <div class="timeline-labels">
+        <span>May 2024</span>
+        <span>Aug 2024</span>
+        <span>Nov 2024</span>
+        <span>Feb 2025</span>
+        <span>May 2025</span>
+        <span>Aug 2025</span>
+        <span>Nov 2025</span>
+        <span>Feb 2026</span>
+        <span>May 2026</span>
+      </div>
+      <div class="history-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--green)"></div>
+          BULLISH / LONG
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--red)"></div>
+          BEARISH / SHORT
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--amber)"></div>
+          NEUTRAL / REDUCE
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--dim)"></div>
+          CASH
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BACKTEST REGIME TABLE -->
+<section class="regime-section">
+  <div class="wrap">
+    <p class="section-label">/ Historical Regime Performance</p>
+    <div class="regime-table fade-in">
+      <div class="regime-row header">
+        <div class="regime-cell header-cell">Period</div>
+        <div class="regime-cell header-cell">Event / Context</div>
+        <div class="regime-cell header-cell">Signal</div>
+        <div class="regime-cell header-cell">Model Return</div>
+      </div>
+      <div class="regime-row">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2000 – 2002</div>
+        <div class="regime-cell">Dot-Com Crash &amp; Bear Market</div>
+        <div class="regime-cell"><span class="regime-tag cash">CASH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+4.1%</span></div>
+      </div>
+      <div class="regime-row">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2003 – 2007</div>
+        <div class="regime-cell">Recovery &amp; Credit Expansion</div>
+        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+182%</span></div>
+      </div>
+      <div class="regime-row">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2008 – 2009</div>
+        <div class="regime-cell">Global Financial Crisis</div>
+        <div class="regime-cell"><span class="regime-tag bear">BEARISH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+31.2%</span></div>
+      </div>
+      <div class="regime-row">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2010 – 2019</div>
+        <div class="regime-cell">Long Bull Market / QE Cycle</div>
+        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+341%</span></div>
+      </div>
+      <div class="regime-row">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">Feb – Mar 2020</div>
+        <div class="regime-cell">COVID Crash</div>
+        <div class="regime-cell"><span class="regime-tag bear">BEARISH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+18.7%</span></div>
+      </div>
+      <div class="regime-row">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2022</div>
+        <div class="regime-cell">Fed Rate Hike Cycle / Inflation</div>
+        <div class="regime-cell"><span class="regime-tag cash">CASH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+3.8%</span></div>
+      </div>
+      <div class="regime-row">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">2023 – 2025</div>
+        <div class="regime-cell">AI Bull Market / Soft Landing</div>
+        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+148%</span></div>
+      </div>
+      <div class="regime-row" style="background:rgba(0,229,160,0.03)">
+        <div class="regime-cell" style="font-family:var(--font-mono);font-size:12px;color:var(--muted)">Apr 2026 →</div>
+        <div class="regime-cell" style="color:#dce8f4;font-weight:500">Current Regime</div>
+        <div class="regime-cell"><span class="regime-tag bull">BULLISH</span></div>
+        <div class="regime-cell"><span class="perf-pos">+11.2%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ASSET SIGNAL TABLE -->
+<section class="selector-section">
+  <div class="wrap">
+    <p class="section-label">/ Current Asset Signals</p>
+    <div class="selector-tabs">
+      <button class="tab-btn active" onclick="filterAssets('all',this)">All</button>
+      <button class="tab-btn" onclick="filterAssets('equities',this)">Equities</button>
+      <button class="tab-btn" onclick="filterAssets('etf',this)">ETFs</button>
+      <button class="tab-btn" onclick="filterAssets('crypto',this)">Crypto</button>
+      <button class="tab-btn" onclick="filterAssets('commodities',this)">Commodities</button>
+      <button class="tab-btn" onclick="filterAssets('bonds',this)">Bonds</button>
+    </div>
+    <div class="asset-grid fade-in" id="assetGrid"></div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section class="method-section">
+  <div class="wrap">
+    <p class="section-label">/ Model Architecture</p>
+    <div class="method-grid fade-in">
+      <div class="method-card">
+        <div class="method-num">01</div>
+        <div class="method-title">Macroeconomic Barometer</div>
+        <div class="method-desc">
+          Monitors yield curve dynamics, credit spread regimes, leading indicators, money supply, and global risk appetite across 18 macro variables. Generates a score from 0–100.
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">02</div>
+        <div class="method-title">Technical Barometer</div>
+        <div class="method-desc">
+          Evaluates price structure, trend persistence, market breadth, volatility regime, and cross-asset momentum signals. Independent of the macro barometer — both must align before a signal is issued.
+        </div>
+      </div>
+      <div class="method-card">
+        <div class="method-num">03</div>
+        <div class="method-title">Signal Generation & Risk Regime</div>
+        <div class="method-desc">
+          When both barometers agree, a directional signal is generated. Disagreement defaults to NEUTRAL (reduce exposure). The model transitions to cash when macro conditions deteriorate before the technical structure breaks.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <div class="wrap">
+    <p class="disclaimer-text">
+      DISCLAIMER — This model and all content is provided for informational and educational purposes only. Nothing published here constitutes financial advice, investment advice, or a solicitation to buy or sell any security. Past backtested performance does not guarantee future results. All investing involves risk, including the possible loss of principal. By accessing this content, you acknowledge that the authors may hold positions in assets discussed at any time without notice. Treat all signals as research inputs, not instructions.
+    </p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    QUANT/SIGNAL MODEL · TACTICAL MARKET BAROMETER · DATA UPDATES DAILY · 16:00 AEST
+  </div>
+</footer>
+
+
+<script>
+// ── TIMELINE CHART ──
+const signals = [];
+const types = ['bull','bull','bull','neut','cash','bear','bear','cash','neut','bull','bull','bull','bull','bull','neut','bull','bull','bull','bull','bull','bull','bull','bull','bull'];
+const heights = [65,70,68,45,30,55,60,35,42,72,75,74,78,80,50,76,78,82,80,83,85,81,82,84];
+
+const timeline = document.getElementById('timeline');
+types.forEach((type, i) => {
+  const bar = document.createElement('div');
+  bar.className = `timeline-bar ${type}`;
+  bar.style.height = heights[i] + 'px';
+  const labels = {bull:'Bullish', bear:'Bearish', neut:'Neutral', cash:'Cash'};
+  bar.setAttribute('data-tip', labels[type]);
+  timeline.appendChild(bar);
+});
+
+// ── ASSET DATA ──
+const assets = [
+  { ticker:'SPY', name:'S&P 500 ETF', sig:'long', change:'+1.4%', cat:'etf' },
+  { ticker:'QQQ', name:'Nasdaq 100 ETF', sig:'long', change:'+1.9%', cat:'etf' },
+  { ticker:'TQQQ', name:'3× Nasdaq', sig:'long', change:'+5.1%', cat:'etf' },
+  { ticker:'IWM', name:'Russell 2000', sig:'watch', change:'+0.3%', cat:'etf' },
+  { ticker:'GLD', name:'Gold ETF', sig:'long', change:'+0.8%', cat:'commodities' },
+  { ticker:'SLV', name:'Silver ETF', sig:'watch', change:'-0.2%', cat:'commodities' },
+  { ticker:'USO', name:'Oil ETF', sig:'cash', change:'-1.1%', cat:'commodities' },
+  { ticker:'TLT', name:'20Y Treasury', sig:'cash', change:'-0.4%', cat:'bonds' },
+  { ticker:'HYG', name:'High Yield Bond', sig:'long', change:'+0.3%', cat:'bonds' },
+  { ticker:'BTC', name:'Bitcoin', sig:'long', change:'+3.2%', cat:'crypto' },
+  { ticker:'ETH', name:'Ethereum', sig:'long', change:'+4.1%', cat:'crypto' },
+  { ticker:'SOL', name:'Solana', sig:'watch', change:'+1.7%', cat:'crypto' },
+  { ticker:'NVDA', name:'Nvidia Corp', sig:'long', change:'+2.6%', cat:'equities' },
+  { ticker:'AAPL', name:'Apple Inc', sig:'long', change:'+1.1%', cat:'equities' },
+  { ticker:'META', name:'Meta Platforms', sig:'long', change:'+1.8%', cat:'equities' },
+  { ticker:'XBI', name:'Biotech ETF', sig:'watch', change:'+0.5%', cat:'etf' },
+  { ticker:'KRE', name:'Regional Banks', sig:'cash', change:'-0.7%', cat:'etf' },
+  { ticker:'XOM', name:'ExxonMobil', sig:'watch', change:'+0.1%', cat:'equities' },
+];
+
+function renderAssets(filter) {
+  const grid = document.getElementById('assetGrid');
+  const filtered = filter === 'all' ? assets : assets.filter(a => a.cat === filter);
+  grid.innerHTML = filtered.map(a => {
+    const isPos = a.change.startsWith('+');
+    const isNeg = a.change.startsWith('-');
+    const sigLabels = { long:'LONG', short:'SHORT', cash:'CASH', watch:'WATCH' };
+    return `
+      <div class="asset-card">
+        <div class="asset-ticker">${a.ticker}</div>
+        <div class="asset-name">${a.name}</div>
+        <div class="asset-signal">
+          <span class="asset-sig-tag ${a.sig}">${sigLabels[a.sig]}</span>
+          <span class="asset-change ${isPos?'pos':isNeg?'neg':''}">${a.change}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterAssets(cat, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAssets(cat);
+}
+
+renderAssets('all');
+
+// ── SIGNAL TOGGLE DEMO ──
+// Users can click the orb to cycle through states to see how it looks
+const states = [
+  { word:'BULLISH', sub:'Full risk-on positioning', cls:'bullish', icon:'↑' },
+  { word:'NEUTRAL', sub:'Reduce exposure — barometers diverging', cls:'neutral', icon:'→' },
+  { word:'BEARISH', sub:'Risk-off — capital preservation mode', cls:'bearish', icon:'↓' },
+];
+let stateIdx = 0;
+document.getElementById('signalOrb').addEventListener('click', () => {
+  stateIdx = (stateIdx + 1) % states.length;
+  const s = states[stateIdx];
+  const orb = document.getElementById('signalOrb');
+  const word = document.getElementById('signalWord');
+  const sub = document.getElementById('signalSub');
+  orb.className = `signal-orb ${s.cls}`;
+  orb.querySelector('.signal-orb-icon').textContent = s.icon;
+  word.className = `signal-word ${s.cls}`;
+  word.textContent = s.word;
+  sub.textContent = s.sub;
+});
+</script>
+</body>
+</html>
