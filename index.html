@@ -224,15 +224,19 @@ footer{border-top:1px solid var(--border);padding:18px 0;text-align:center;font-
 
   <!-- API KEY ENTRY -->
   <div class="api-key-section fade-in d2" id="apiKeySection">
-    <div class="api-key-title">/ Anthropic API Key Required</div>
-    <div class="api-key-desc">Enter your Anthropic API key to activate live AI-powered signal computation. Your key is stored only in your browser session (never on any server) and used only to call the Claude AI model on each refresh.</div>
+    <div class="api-key-title">/ API Keys Required</div>
+    <div class="api-key-desc">Enter both API keys to activate the model. Keys are stored only in your browser session and never on any server.</div>
+    <div class="api-key-row" style="margin-bottom:8px">
+      <input class="api-key-input" type="password" id="anthropicKeyInput" placeholder="Anthropic key: sk-ant-api03-..." autocomplete="off">
+    </div>
     <div class="api-key-row">
-      <input class="api-key-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+      <input class="api-key-input" type="password" id="finnhubKeyInput" placeholder="Finnhub key: d0abc123..." autocomplete="off">
       <button class="api-key-btn" onclick="saveKeyAndRun()">ACTIVATE MODEL</button>
     </div>
     <div class="api-key-note">
-      GET YOUR KEY: console.anthropic.com → API Keys → Create Key &nbsp;|&nbsp; Cost: ~$0.001 per refresh (claude-haiku-4-5 model)<br>
-      Your key is only sent directly to api.anthropic.com. It is never logged or stored on any server.
+      ANTHROPIC KEY: console.anthropic.com → API Keys → Create Key &nbsp;|&nbsp; Cost: ~$0.001 per refresh<br>
+      FINNHUB KEY: finnhub.io → Dashboard → API Key (free tier) &nbsp;|&nbsp; Used for live market prices<br>
+      Keys are stored only in your browser session. Never logged or sent anywhere except the respective APIs.
     </div>
   </div>
 
@@ -440,24 +444,32 @@ const ASSETS = [
 let allAssets = [];
 let currentFilter = 'all';
 let apiKey = sessionStorage.getItem('qsm_key') || '';
+let finnhubKey = sessionStorage.getItem('qsm_fhkey') || '';
 
 // ── INIT ───────────────────────────────────────────────────────────────────
 window.onload = () => {
   buildTimeline();
-  if (apiKey) {
+  if (apiKey && finnhubKey) {
     document.getElementById('apiKeySection').style.display = 'none';
     runModel();
   }
 };
 
 function saveKeyAndRun() {
-  const k = document.getElementById('apiKeyInput').value.trim();
-  if (!k.startsWith('sk-ant')) {
+  const ak = document.getElementById('anthropicKeyInput').value.trim();
+  const fk = document.getElementById('finnhubKeyInput').value.trim();
+  if (!ak.startsWith('sk-ant')) {
     alert('Please enter a valid Anthropic API key (starts with sk-ant-)');
     return;
   }
-  apiKey = k;
-  sessionStorage.setItem('qsm_key', k);
+  if (!fk || fk.length < 8) {
+    alert('Please enter your Finnhub API key');
+    return;
+  }
+  apiKey = ak;
+  finnhubKey = fk;
+  sessionStorage.setItem('qsm_key', ak);
+  sessionStorage.setItem('qsm_fhkey', fk);
   document.getElementById('apiKeySection').style.display = 'none';
   runModel();
 }
@@ -486,35 +498,71 @@ async function runModel() {
   btn.disabled = false;
 }
 
-// ── FETCH MARKET DATA ──────────────────────────────────────────────────────
+// ── FETCH MARKET DATA via Finnhub ─────────────────────────────────────────
 async function fetchMarketData() {
-  const symbols = ASSETS.map(a => a.yf).join(',');
-  setStep('Fetching live market data...');
-  try {
-    const workerUrl = `https://quant-proxy.arminmo2016.workers.dev/yahoo?symbols=${encodeURIComponent(symbols)}`;
-    const resp = await fetch(workerUrl, {signal: AbortSignal.timeout(10000)});
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const raw = await resp.json();
-    const quotes = raw?.quoteResponse?.result;
-    if (!quotes || quotes.length === 0) throw new Error('No quotes returned');
-    const data = {};
-    quotes.forEach(q => {
-      data[q.symbol] = {
-        price: q.regularMarketPrice,
-        change: q.regularMarketChangePercent,
-        changeAbs: q.regularMarketChange,
-        volume: q.regularMarketVolume,
-        ma50: q.fiftyDayAverage,
-        ma200: q.twoHundredDayAverage,
+  setStep('Fetching live market data from Finnhub...');
+
+  // Finnhub symbol mapping (some differ from Yahoo)
+  const finnhubMap = {
+    'SPY':'SPY','QQQ':'QQQ','IWM':'IWM','TQQQ':'TQQQ',
+    'GLD':'GLD','SLV':'SLV','USO':'USO','TLT':'TLT','HYG':'HYG',
+    'NVDA':'NVDA','AAPL':'AAPL','META':'META','MSFT':'MSFT','XBI':'XBI',
+    'BTC-USD':'BINANCE:BTCUSDT','ETH-USD':'BINANCE:ETHUSDT',
+    'SOL-USD':'BINANCE:SOLUSDT','^VIX':'VIX'
+  };
+
+  const data = {};
+  let fetchedCount = 0;
+
+  // Fetch all symbols in parallel (Finnhub free tier: 60 calls/min)
+  const fetchPromises = ASSETS.map(async (asset) => {
+    const fhSymbol = finnhubMap[asset.yf] || asset.yf;
+    try {
+      const resp = await fetch(
+        `https://quant-proxy.arminmo2016.workers.dev/quote?symbol=${encodeURIComponent(fhSymbol)}`,
+        {
+          headers: { 'x-finnhub-key': finnhubKey },
+          signal: AbortSignal.timeout(8000)
+        }
+      );
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const q = await resp.json();
+      if (q.error || q.c === undefined) throw new Error(q.error || 'No data');
+
+      // Finnhub response: c=current, pc=prev close, h=high, l=low, o=open, dp=% change
+      const pctChange = q.dp !== undefined ? q.dp : (q.pc > 0 ? ((q.c - q.pc) / q.pc * 100) : 0);
+      data[asset.yf] = {
+        price: q.c,
+        change: pctChange,
+        changeAbs: q.d || (q.c - q.pc),
+        high: q.h,
+        low: q.l,
+        open: q.o,
+        prevClose: q.pc,
+        // Finnhub quote doesn't include MAs — use fallback MA estimates
+        ma50: getFallbackData()[asset.yf]?.ma50 || q.c,
+        ma200: getFallbackData()[asset.yf]?.ma200 || q.c,
       };
-    });
-    console.log('Live market data fetched successfully:', Object.keys(data).length, 'symbols');
-    return data;
-  } catch(e) {
-    console.warn('Live fetch failed (' + e.message + '), using fallback data');
-    setStep('Live prices unavailable — using recent data for AI analysis...');
+      fetchedCount++;
+    } catch(e) {
+      console.warn('Finnhub fetch failed for', asset.ticker, ':', e.message);
+      // Use fallback for this specific asset
+      const fb = getFallbackData()[asset.yf];
+      if (fb) data[asset.yf] = fb;
+    }
+  });
+
+  await Promise.all(fetchPromises);
+
+  if (fetchedCount === 0) {
+    console.warn('All Finnhub fetches failed, using full fallback');
+    setStep('Live prices unavailable — using recent data...');
     return getFallbackData();
   }
+
+  console.log(`Live data fetched: ${fetchedCount}/${ASSETS.length} symbols from Finnhub`);
+  setStep(`Live data loaded (${fetchedCount} symbols) — running AI analysis...`);
+  return data;
 }
 
 function getFallbackData() {
